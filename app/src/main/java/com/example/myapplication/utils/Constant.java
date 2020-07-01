@@ -6,7 +6,7 @@ public class Constant {
   /**
    * 数据生产间隔，单位ms
    */
-  public static final int INTERVAL = 10000;
+  public static final int INTERVAL = 100;
 
   /**
    * x轴的最小值
