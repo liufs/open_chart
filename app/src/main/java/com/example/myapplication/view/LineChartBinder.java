@@ -1,17 +1,22 @@
 package com.example.myapplication.view;
 
 import android.graphics.Color;
+import android.util.Log;
 import android.view.View;
 
 import com.example.myapplication.R;
 import com.example.myapplication.Repo.DataFactory;
 import com.example.myapplication.utils.Constant;
+import com.example.myapplication.widget.GateLineChartView;
+import com.example.myapplication.widget.GateView;
 import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.MarkerView;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.highlight.Highlight;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,11 +26,13 @@ import io.reactivex.disposables.Disposable;
 
 public class LineChartBinder implements ViewBinder {
 
+  private static final String TAG = "LineChartBinder";
+
   // Chart需要的点数据链表
   private List<Entry> mEntries1 = new ArrayList<>();
   // LineDataSet:点集合,即一条线
   private LineDataSet mLineDataSet1 = new LineDataSet(mEntries1, "折线1");
-  private LineChart mLineChart;
+  private GateLineChartView mLineChart;
   private LineData mLineData; // 线集合，所有折现以数组的形式存到此集合中
   private XAxis mXAxis; //X轴
   private YAxis mLeftYAxis; //左侧Y轴
@@ -51,6 +58,8 @@ public class LineChartBinder implements ViewBinder {
 
     // 设置XY轴
     setXYAxis(mLineChart, mXAxis, mLeftYAxis, mRightYAxis);
+//    setMarkView();
+//    setGateView();
   }
 
   @Override
@@ -73,7 +82,7 @@ public class LineChartBinder implements ViewBinder {
     lineChart.setDragEnabled(true); //是否可以拖动
     lineChart.setScaleEnabled(true); // 是否可以缩放
     lineChart.setTouchEnabled(true); //是否有触摸事件
-    lineChart.moveViewToX(-250); // 向左移动250刻度
+    lineChart.moveViewToX(-125); // 向左移动250刻度
   }
 
 
@@ -89,15 +98,16 @@ public class LineChartBinder implements ViewBinder {
     //    xAxis.setGranularity(1f); // 设置X轴坐标之间的最小间隔
     lineChart.setVisibleXRangeMaximum(Constant.MAXIMUM_RANGE_X);// 当前统计图表中最多在x轴坐标线上显示的总量
     //保证Y轴从0开始，不然会上移一点
-    leftYAxis.setAxisMinimum(0f);
-    rightYAxis.setAxisMinimum(0f);
-    leftYAxis.setAxisMaximum(100f);
-    rightYAxis.setAxisMaximum(100f);
+    leftYAxis.setAxisMinimum(Constant.MINIMUM_Y);
+    rightYAxis.setAxisMinimum(Constant.MINIMUM_Y);
+    leftYAxis.setAxisMaximum(Constant.MAXIMUM_Y);
+    rightYAxis.setAxisMaximum(Constant.MAXIMUM_Y);
     leftYAxis.setGranularity(1f);
     rightYAxis.setGranularity(1f);
-    leftYAxis.setLabelCount(20);
-    lineChart.setVisibleYRangeMaximum(30, YAxis.AxisDependency.LEFT);// 当前统计图表中最多在Y轴坐标线上显示的总量
-    lineChart.setVisibleYRangeMaximum(30, YAxis.AxisDependency.RIGHT);// 当前统计图表中最多在Y轴坐标线上显示的总量
+    leftYAxis.setLabelCount(Constant.LABEL_COUNT_Y);
+    lineChart.setVisibleYRangeMaximum(Constant.MAXIMUM_RANGE_Y, YAxis.AxisDependency.LEFT);// 当前统计图表中最多在Y轴坐标线上显示的总量
+    lineChart.setVisibleYRangeMaximum(Constant.MAXIMUM_RANGE_Y, YAxis.AxisDependency.RIGHT);// 当前统计图表中最多在Y
+    // 轴坐标线上显示的总量
     leftYAxis.setEnabled(false);
   }
 
@@ -128,6 +138,22 @@ public class LineChartBinder implements ViewBinder {
 
     lineChart.invalidate();
   }
+
+  private void setMarkView(){
+//    mLineChart.setHighlightPerTapEnabled(false);
+//    MarkerView markerView = new MarkerView(mLineChart.getContext(),R.layout.mark_view_test);
+//    mLineChart.setMarker(markerView);
+//    mLineChart.getTransformer(set.getAxisDependency()).getPixelForValues(e.getX(), e.getY() * mAnimator
+//        .getPhaseY())
+//    Highlight highlight = new Highlight(100,30,0,0);
+//    mLineChart.highlightValues(new Highlight[]{
+//        highlight});
+  }
+
+//  private void setGateView(){
+//    GateView gateView = new GateView(mLineChart.getContext(),R.layout.mark_view_test);
+//    mLineChart.addGateView(new Entry(100,20),gateView);
+//  }
 
   /**
    * 曲线初始化设置,一个LineDataSet 代表一条曲线
@@ -164,6 +190,7 @@ public class LineChartBinder implements ViewBinder {
       mLineDataSet1.clear();
       mLineData.clearValues();
       createLine(list, mEntries1, mLineDataSet1, Color.RED, mLineData, mLineChart);
+      Log.i(TAG, "getEntryByTouchPoint: " + mLineChart.getEntryByTouchPoint(300, 300).toString());
     }, error -> {
 
     });

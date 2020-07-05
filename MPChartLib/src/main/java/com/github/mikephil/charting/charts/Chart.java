@@ -792,11 +792,13 @@ public abstract class Chart<T extends ChartData<? extends IDataSet<? extends Ent
             Entry e = mData.getEntryForHighlight(mIndicesToHighlight[i]);
             int entryIndex = set.getEntryIndex(e);
 
+            Log.i("drawMarkers","entry: " + e + "entryIndex: " + entryIndex);
             // make sure entry not null
             if (e == null || entryIndex > set.getEntryCount() * mAnimator.getPhaseX())
                 continue;
 
             float[] pos = getMarkerPosition(highlight);
+            Log.i("drawMarkers","pos: X: " + pos[0] + " Y " + pos[1]);
 
             // check bounds
             if (!mViewPortHandler.isInBounds(pos[0], pos[1]))

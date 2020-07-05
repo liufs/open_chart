@@ -1,5 +1,7 @@
 package com.example.myapplication.Repo;
 
+import com.github.mikephil.charting.data.Entry;
+
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,10 +18,21 @@ public class DataFactory {
   private PublishSubject<List<Float>> mDataChangeSubject = PublishSubject.create();
   private int mInterval;
   private boolean mIsLoop = true;
+  private GateDataListener mGateDataListener;
+
+  public ArrayList<GateData> getGateDatas() {
+    return mGateDatas;
+  }
+
+  private ArrayList<GateData> mGateDatas = new ArrayList<>();
 
   public DataFactory(int interval) {
     mInterval = interval;
     startCreateData();
+  }
+
+  public void setGateDataListener(GateDataListener gateDataListener) {
+    mGateDataListener = gateDataListener;
   }
 
   public Observable<List<Float>> subscribeDataChange() {
@@ -31,7 +44,7 @@ public class DataFactory {
       while (mIsLoop) {
         List<Float> data = new ArrayList<>();
         for (int i = 0; i < 500; i++) {
-          data.add(getRandom(30f));
+          data.add(getRandom(100f));
         }
         mDataChangeSubject.onNext(data);
         try {
@@ -47,16 +60,26 @@ public class DataFactory {
    * 功能：产生随机数（小数点两位）
    */
   public Float getRandom(Float seed) {
-    return Float.valueOf(mDecimalFormat.format(mRandom.nextFloat() * seed));
+    return Float.valueOf(mDecimalFormat.format(mRandom.nextFloat() * seed)) - 50;
   }
 
   public void setIsLoop(boolean isLoop) {
     this.mIsLoop = isLoop;
   }
 
-  public void setInterval(int interval){
+  public void setInterval(int interval) {
     mInterval = interval;
   }
 
+  public void addGateData(int id, Entry entry){
+    if(mGateDataListener != null){
+      mGateDataListener.addGate(id,entry);
+    }
+  }
 
+  public void removeGateData(int id){
+    if(mGateDataListener != null){
+      mGateDataListener.removeGate(id);
+    }
+  }
 }

@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.View;
 
 import com.example.myapplication.Repo.DataFactory;
+import com.example.myapplication.view.GateViewBinder;
 import com.example.myapplication.view.IntervalTestBinder;
 import com.example.myapplication.view.LineChartBinder;
 import com.example.myapplication.view.ViewBinder;
@@ -31,6 +32,7 @@ public class RefreshLineActivity extends Activity {
   private void initViewBinder(View root) {
     mViewBinderList.add(new LineChartBinder(mDataFactory));
     mViewBinderList.add(new IntervalTestBinder(mDataFactory));
+    mViewBinderList.add(new GateViewBinder(this,mDataFactory));
     for (ViewBinder viewBinder : mViewBinderList) {
       viewBinder.doBindView(root);
     }
