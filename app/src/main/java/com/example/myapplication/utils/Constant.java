@@ -45,5 +45,15 @@ public class Constant {
    */
   public static final int MAXIMUM_RANGE_Y = 100;
 
+  /**
+   * 左右放缩的控制区域，已右竖线为准，左右可操控的宽度
+   */
+  public static final int SCALE_RANGE = 50;
+
+  /**
+   * 闸门的最小宽度
+   */
+  public static final int GATE_MIN_WIDTH = 100;
+
 
 }

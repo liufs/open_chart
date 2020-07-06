@@ -11,6 +11,7 @@ import com.example.myapplication.R;
 import com.example.myapplication.Repo.DataFactory;
 import com.example.myapplication.Repo.GateData;
 import com.example.myapplication.Repo.GateDataListener;
+import com.example.myapplication.utils.Constant;
 import com.example.myapplication.widget.GateLineChartView;
 import com.example.myapplication.widget.GateView;
 import com.github.mikephil.charting.components.YAxis;
@@ -44,8 +45,7 @@ public class GateViewBinder implements ViewBinder {
             return;
           }
         }
-        GateData data = new GateData(id, entry, new GateView(mLineChartView.getContext(),
-            R.layout.mark_view_test));
+        GateData data = new GateData(id, entry, new GateView(mActivity, R.layout.mark_view_test));
         initGestureDetector(data.getGateView());
         mLineChartView.addGateView(data);
         mDatas.add(data);
@@ -86,7 +86,7 @@ public class GateViewBinder implements ViewBinder {
       @Override
       public void onLongPress(MotionEvent e) {
         for (GateData data : mDatas) {
-          if (data.getGateView() == gateView && gateView.isTouchPointInView(e.getX(),e.getY())) {
+          if (data.getGateView() == gateView && gateView.isTouchPointInView(e.getX(), e.getY())) {
             if (data.getGateView().isIntercept()) {
               data.getGateView().setIntercept(false);
               Toast.makeText(mActivity, "关闭闸门编辑功能 id: " + data.getId(), Toast.LENGTH_SHORT).show();
@@ -107,6 +107,16 @@ public class GateViewBinder implements ViewBinder {
       public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
         for (GateData data : mDatas) {
           if (data.getGateView() == gateView && gateView.isIntercept()) {
+            if (gateView.isInScaleRange(e2.getX(), e2.getY())) {
+              float w = gateView.getContentViewWidth() - distanceX;
+              Log.i(TAG, "new width: " + w + " distanceX: " + distanceX);
+              if (w <= Constant.GATE_MIN_WIDTH) {
+                return true;
+              }
+              gateView.changeWidth((int) w);
+              mLineChartView.invalidate();
+              return true;
+            }
             int drawX = (int) gateView.getDrawX();
             int drawY = (int) gateView.getDrawY();
             Log.i(TAG, "drawX: " + drawX + " drawY: " + drawY);

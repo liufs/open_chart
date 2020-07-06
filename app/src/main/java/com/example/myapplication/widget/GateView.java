@@ -8,9 +8,10 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.FrameLayout;
-import android.widget.RelativeLayout;
 
 import com.github.mikephil.charting.data.Entry;
+
+import static com.example.myapplication.utils.Constant.SCALE_RANGE;
 
 /**
  * 在图表中选出一块区域，获取XY轴的值
@@ -21,6 +22,7 @@ public class GateView extends FrameLayout implements IGate {
   private Entry mData;
   private GestureDetector mGestureDetector;
   private float mDrawX, mDrawY;
+  private View mContentView;
 
   /**
    * Constructor. Sets up the MarkerView with a custom layout resource.
@@ -63,14 +65,20 @@ public class GateView extends FrameLayout implements IGate {
 
   private void setupLayoutResource(int layoutResource) {
 
-    View inflated = LayoutInflater.from(getContext()).inflate(layoutResource, this);
-
-    inflated.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT));
-    inflated.measure(MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED),
+    mContentView = LayoutInflater.from(getContext()).inflate(layoutResource, this);
+    mContentView.measure(MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED),
         MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
+    mContentView.layout(0, 0, mContentView.getMeasuredWidth(), mContentView.getMeasuredHeight());
+  }
 
-    // measure(getWidth(), getHeight());
-    inflated.layout(0, 0, inflated.getMeasuredWidth(), inflated.getMeasuredHeight());
+  public int getContentViewWidth() {
+    return mContentView.getWidth();
+  }
+
+  public void changeWidth(int width) {
+    mContentView.measure(MeasureSpec.makeMeasureSpec(width, MeasureSpec.EXACTLY),
+        MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
+    mContentView.layout(0, 0, mContentView.getMeasuredWidth(), mContentView.getMeasuredHeight());
   }
 
   @Override
@@ -97,14 +105,22 @@ public class GateView extends FrameLayout implements IGate {
   }
 
   public boolean isTouchPointInView(float xAxis, float yAxis) {
-    int[] location = new int[2];
-    getLocationInWindow(location);
     float left = mDrawX;
     float top = mDrawY;
     Log.i("liufs", "left: " + left + " top: " + top);
     float right = left + getMeasuredWidth();
     float bottom = top + getMeasuredHeight();
     if (yAxis >= top && yAxis <= bottom && xAxis >= left && xAxis <= right) {
+      return true;
+    }
+    return false;
+  }
+
+  public boolean isInScaleRange(float x, float y) {
+    float top = mDrawY;
+    float right = mDrawX + getMeasuredWidth();
+    float bottom = mDrawY + getMeasuredHeight();
+    if (y >= top && y <= bottom && x >= right - SCALE_RANGE && x <= right + SCALE_RANGE) {
       return true;
     }
     return false;
